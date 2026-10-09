@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/main_feed_screen.dart';
+import 'screens/registration_screen.dart';
 
 void main() {
   runApp(const ExpenseTrackerApp());
@@ -17,7 +17,7 @@ class ExpenseTrackerApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF02569B)),
         useMaterial3: true,
       ),
-      home: const MainFeedScreen(),
+      home: const RegistrationScreen(),
     );
   }
 }
