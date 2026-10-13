@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'main_feed_screen.dart';
+import 'catalog_home_screen.dart';
 import 'registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         .showSnackBar(const SnackBar(content: Text('Welcome back!')));
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MainFeedScreen()),
+      MaterialPageRoute(builder: (context) => const CatalogHomeScreen()),
     );
   }
 

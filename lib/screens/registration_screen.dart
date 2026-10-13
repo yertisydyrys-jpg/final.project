@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
-import 'main_feed_screen.dart';
+import 'catalog_home_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -47,7 +47,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MainFeedScreen()),
+      MaterialPageRoute(builder: (context) => const CatalogHomeScreen()),
     );
   }
 
