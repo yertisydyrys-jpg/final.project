@@ -36,10 +36,21 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: CatalogHomeScreen()));
 
     await tester.tap(find.byTooltip('Add to favorites').first);
-    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Favorites'));
     await tester.pumpAndSettle();
 
     expect(find.text('Everyday Backpack'), findsOneWidget);
+  });
+
+  testWidgets('AppBar back button pops the detail route', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: CatalogHomeScreen()));
+
+    await tester.tap(find.text('Everyday Backpack').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Discover'), findsOneWidget);
   });
 }
