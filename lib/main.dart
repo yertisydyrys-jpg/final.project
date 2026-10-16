@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import 'providers/finance_provider.dart';
 import 'screens/registration_screen.dart';
 
-void main() {
-  runApp(const ExpenseTrackerApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  final cardsBox = await Hive.openBox<Map>('virtual_cards');
+  final transactionsBox = await Hive.openBox<Map>('finance_transactions');
+  runApp(
+    ProviderScope(
+      overrides: [
+        financeProvider.overrideWith(
+          (ref) => FinanceController(
+            cardsBox: cardsBox,
+            transactionsBox: transactionsBox,
+          ),
+        ),
+      ],
+      child: const ExpenseTrackerApp(),
+    ),
+  );
 }
 
 class ExpenseTrackerApp extends StatelessWidget {

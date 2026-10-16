@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/catalog_item.dart';
 import 'catalog_item_detail_screen.dart';
+import 'help_and_support_screen.dart';
 import 'main_feed_screen.dart';
 
 class CatalogHomeScreen extends StatefulWidget {
@@ -38,8 +39,9 @@ class _CatalogHomeScreenState extends State<CatalogHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final favorites =
-        catalogItems.where((item) => _favoriteIds.contains(item.id)).toList();
+    final favorites = catalogItems
+        .where((item) => _favoriteIds.contains(item.id))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -130,9 +132,8 @@ class _CatalogList extends StatelessWidget {
         if (!isFavoritesTab) ...[
           Text(
             'Find something you love',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
@@ -168,156 +169,227 @@ class _CatalogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.only(bottom: 16),
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    clipBehavior: Clip.antiAlias,
+    margin: const EdgeInsets.only(bottom: 16),
+    child: InkWell(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
             children: [
-              Stack(
-                children: [
-                  Image.network(
-                    item.imageUrl,
-                    width: double.infinity,
-                    height: 190,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      height: 190,
-                      width: double.infinity,
-                      color: Colors.blueGrey.shade50,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported_outlined,
-                          size: 42),
-                    ),
+              Image.network(
+                item.imageUrl,
+                width: double.infinity,
+                height: 190,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 190,
+                  width: double.infinity,
+                  color: Colors.blueGrey.shade50,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 42,
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: IconButton.filledTonal(
-                      tooltip: isFavorite
-                          ? 'Remove from favorites'
-                          : 'Add to favorites',
-                      onPressed: onFavoriteTap,
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : null,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.category,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            item.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Text(
-                          '\$${item.price.toStringAsFixed(2)}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Added ${item.publishedAt.month}/${item.publishedAt.day}/${item.publishedAt.year}',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                  ],
+              Positioned(
+                top: 10,
+                right: 10,
+                child: IconButton.filledTonal(
+                  tooltip: isFavorite
+                      ? 'Remove from favorites'
+                      : 'Add to favorites',
+                  onPressed: onFavoriteTap,
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : null,
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      );
-}
-
-class _ProfileTab extends StatelessWidget {
-  const _ProfileTab();
-
-  @override
-  Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const SizedBox(height: 20),
-          const CircleAvatar(
-            radius: 42,
-            child: Icon(Icons.person, size: 42),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Welcome, User',
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Manage your account and preferences',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 28),
-          Card(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ListTile(
-                  leading: Icon(Icons.person_outline),
-                  title: Text('Account type'),
-                  subtitle: Text('User'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.account_balance_wallet_outlined),
-                  title: const Text('Personal Finance'),
-                  subtitle: const Text('Cards, balance, and transactions'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MainFeedScreen(),
-                    ),
+                Text(
+                  item.category,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Divider(height: 1),
-                const ListTile(
-                  leading: Icon(Icons.notifications_outlined),
-                  title: Text('Notifications'),
-                  trailing: Icon(Icons.toggle_on_outlined),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.title,
+                        style: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      '\$${item.price.toStringAsFixed(2)}',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                const Divider(height: 1),
-                const ListTile(
-                  leading: Icon(Icons.help_outline),
-                  title: Text('Help and support'),
-                  trailing: Icon(Icons.chevron_right),
+                const SizedBox(height: 4),
+                Text(
+                  'Added ${item.publishedAt.month}/${item.publishedAt.day}/${item.publishedAt.year}',
+                  style: TextStyle(color: Colors.grey.shade600),
                 ),
               ],
             ),
           ),
         ],
-      );
+      ),
+    ),
+  );
+}
+
+class _ProfileTab extends StatefulWidget {
+  const _ProfileTab();
+
+  @override
+  State<_ProfileTab> createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends State<_ProfileTab> {
+  String _displayName = 'User';
+
+  Future<void> _editDisplayName() async {
+    final updatedName = await showDialog<String>(
+      context: context,
+      builder: (_) => _DisplayNameDialog(initialName: _displayName),
+    );
+
+    if (updatedName != null && mounted) {
+      setState(() => _displayName = updatedName);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => ListView(
+    padding: const EdgeInsets.all(20),
+    children: [
+      const SizedBox(height: 20),
+      const CircleAvatar(radius: 42, child: Icon(Icons.person, size: 42)),
+      const SizedBox(height: 12),
+      Text(
+        'Welcome, $_displayName',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.headlineSmall
+            ?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        'Manage your account and preferences',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.grey.shade700),
+      ),
+      const SizedBox(height: 28),
+      Card(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: const Text('Account type'),
+              subtitle: Text(_displayName),
+              trailing: IconButton(
+                tooltip: 'Edit display name',
+                onPressed: _editDisplayName,
+                icon: const Icon(Icons.edit_outlined),
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.account_balance_wallet_outlined),
+              title: const Text('Personal Finance'),
+              subtitle: const Text('Cards, balance, and transactions'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MainFeedScreen()),
+              ),
+            ),
+            const Divider(height: 1),
+            const ListTile(
+              leading: Icon(Icons.notifications_outlined),
+              title: Text('Notifications'),
+              trailing: Icon(Icons.toggle_on_outlined),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: const Text('Help and support'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => const HelpAndSupportScreen()),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+class _DisplayNameDialog extends StatefulWidget {
+  const _DisplayNameDialog({required this.initialName});
+
+  final String initialName;
+
+  @override
+  State<_DisplayNameDialog> createState() => _DisplayNameDialogState();
+}
+
+class _DisplayNameDialogState extends State<_DisplayNameDialog> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialName,
+  );
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.pop(context, _controller.text.trim());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Edit display name'),
+    content: Form(
+      key: _formKey,
+      child: TextFormField(
+        controller: _controller,
+        autofocus: true,
+        textCapitalization: TextCapitalization.words,
+        decoration: const InputDecoration(labelText: 'Display name'),
+        validator: (value) => value == null || value.trim().isEmpty
+            ? 'Enter a display name'
+            : null,
+        onFieldSubmitted: (_) => _save(),
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(onPressed: _save, child: const Text('Save')),
+    ],
+  );
 }

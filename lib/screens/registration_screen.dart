@@ -76,7 +76,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF15324B).withValues(alpha: 0.08),
+                          color: const Color(0xFF15324B)
+                              .withValues(alpha: 0.08),
                           blurRadius: 28,
                           offset: const Offset(0, 12),
                         ),
@@ -105,8 +106,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
-                                    ? 'Enter your name'
-                                    : null,
+                                ? 'Enter your name'
+                                : null,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -211,9 +212,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 Expanded(
                                   child: Text(
                                     'Account type',
-                                    style: TextStyle(
-                                      color: Color(0xFF667085),
-                                    ),
+                                    style: TextStyle(color: Color(0xFF667085)),
                                   ),
                                 ),
                                 Text(
@@ -229,9 +228,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           const SizedBox(height: 8),
                           CheckboxListTile(
                             value: _acceptTerms,
-                            onChanged: (value) => setState(
-                              () => _acceptTerms = value ?? false,
-                            ),
+                            onChanged: (value) =>
+                                setState(() => _acceptTerms = value ?? false),
                             title: const Text(
                               'I accept the Terms and Conditions',
                               style: TextStyle(fontSize: 14),
@@ -342,10 +340,7 @@ class _AuthHeader extends StatelessWidget {
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Color(0xFF667085),
-            fontSize: 15,
-          ),
+          style: const TextStyle(color: Color(0xFF667085), fontSize: 15),
         ),
       ],
     );
@@ -382,8 +377,6 @@ const _primaryButtonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(Color(0xFF02569B)),
   foregroundColor: WidgetStatePropertyAll(Colors.white),
   shape: WidgetStatePropertyAll(
-    RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(14)),
-    ),
+    RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
   ),
 );
