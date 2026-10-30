@@ -6,6 +6,7 @@ class CatalogItem {
     required this.imageUrl,
     required this.price,
     required this.category,
+    required this.rating,
     required this.publishedAt,
   });
 
@@ -15,6 +16,7 @@ class CatalogItem {
   final String imageUrl;
   final double price;
   final String category;
+  final double rating;
   final DateTime publishedAt;
 }
 
@@ -25,10 +27,10 @@ final catalogItems = <CatalogItem>[
     description:
         'A lightweight, water-resistant backpack with a padded laptop sleeve '
         'and room for all your daily essentials.',
-    imageUrl:
-        'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=900',
+    imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=900',
     price: 59.99,
     category: 'Accessories',
+    rating: 4.8,
     publishedAt: DateTime(2026, 10, 12),
   ),
   CatalogItem(
@@ -41,6 +43,7 @@ final catalogItems = <CatalogItem>[
         'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=900',
     price: 89.50,
     category: 'Electronics',
+    rating: 4.6,
     publishedAt: DateTime(2026, 10, 10),
   ),
   CatalogItem(
@@ -53,6 +56,7 @@ final catalogItems = <CatalogItem>[
         'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=900',
     price: 124.00,
     category: 'Accessories',
+    rating: 4.9,
     publishedAt: DateTime(2026, 10, 8),
   ),
   CatalogItem(
@@ -65,6 +69,7 @@ final catalogItems = <CatalogItem>[
         'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=900',
     price: 74.95,
     category: 'Electronics',
+    rating: 4.5,
     publishedAt: DateTime(2026, 10, 5),
   ),
 ];

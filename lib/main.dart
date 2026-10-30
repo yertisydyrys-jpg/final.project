@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/catalog_provider.dart';
 import 'screens/registration_screen.dart';
 
 void main() {
-  runApp(const ExpenseTrackerApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CatalogProvider(),
+      child: const ExpenseTrackerApp(),
+    ),
+  );
 }
 
 class ExpenseTrackerApp extends StatelessWidget {
