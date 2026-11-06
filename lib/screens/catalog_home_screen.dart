@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/catalog_item.dart';
+import '../providers/cart_provider.dart';
 import '../providers/catalog_provider.dart';
+import 'catalog_screen.dart';
 import 'catalog_item_detail_screen.dart';
 import 'main_feed_screen.dart';
 
@@ -30,6 +32,28 @@ class CatalogHomeScreen extends StatelessWidget {
                 ),
               );
             },
+          ),
+          IconButton(
+            tooltip: 'Open shopping catalog',
+            onPressed: () => Navigator.of(context).push<void>(
+              MaterialPageRoute<void>(builder: (_) => const CatalogScreen()),
+            ),
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.shopping_bag_outlined),
+                Positioned(
+                  top: -8,
+                  right: -8,
+                  child: Consumer<CartProvider>(
+                    builder: (context, cart, _) => Badge(
+                      isLabelVisible: cart.itemCount > 0,
+                      label: Text('${cart.itemCount}'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

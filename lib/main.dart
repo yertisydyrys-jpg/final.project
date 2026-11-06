@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/cart_provider.dart';
 import 'providers/catalog_provider.dart';
 import 'screens/registration_screen.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => CatalogProvider(),
-      child: const ExpenseTrackerApp(),
+      create: (_) => CartProvider(),
+      child: ChangeNotifierProvider(
+        create: (_) => CatalogProvider(),
+        child: const ExpenseTrackerApp(),
+      ),
     ),
   );
 }

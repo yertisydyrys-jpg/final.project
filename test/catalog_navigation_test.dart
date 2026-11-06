@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_hello_yer/screens/catalog_home_screen.dart';
+import 'package:flutter_hello_yer/providers/cart_provider.dart';
 import 'package:flutter_hello_yer/providers/catalog_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -100,8 +101,11 @@ void main() {
     }
 
     await tester.pumpWidget(
-      ChangeNotifierProvider.value(
-        value: catalog,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: catalog),
+          ChangeNotifierProvider(create: (_) => CartProvider()),
+        ],
         child: const MaterialApp(home: CatalogHomeScreen()),
       ),
     );
@@ -134,8 +138,11 @@ void main() {
 
 Future<void> _pumpCatalogHome(WidgetTester tester) async {
   await tester.pumpWidget(
-    ChangeNotifierProvider(
-      create: (_) => CatalogProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CatalogProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+      ],
       child: const MaterialApp(home: CatalogHomeScreen()),
     ),
   );
