@@ -39,6 +39,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/android/.gradle/
+/android/build/
 /coverage/
 
 # Symbolication related
