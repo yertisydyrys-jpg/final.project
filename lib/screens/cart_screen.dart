@@ -24,41 +24,44 @@ class CartScreen extends StatelessWidget {
       ),
       body: cart.items.isEmpty
           ? const _EmptyCart()
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: cart.items.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final product = cart.items[index];
-                      return _CartItemTile(product: product);
-                    },
-                  ),
-                ),
-                SafeArea(
-                  top: false,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(20),
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 960),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: cart.items.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final product = cart.items[index];
+                          return _CartItemTile(product: product);
+                        },
                       ),
                     ),
-                    child: Text(
-                      'Total: \$${cart.totalPrice.toStringAsFixed(2)}',
-                      textAlign: TextAlign.end,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                    SafeArea(
+                      top: false,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        child: Text(
+                          'Total: \$${cart.totalPrice.toStringAsFixed(2)}',
+                          textAlign: TextAlign.end,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
     );
   }
@@ -95,16 +98,66 @@ class _CartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: ListTile(
-      leading: CircleAvatar(child: Icon(product.icon)),
-      title: Text(product.name),
+      leading: _CartProductImage(url: product.imageUrl),
+      title: Text(product.title),
       subtitle: Text('\$${product.price.toStringAsFixed(2)}'),
       trailing: IconButton(
-        tooltip: 'Remove ${product.name}',
+        tooltip: 'Remove ${product.title}',
         onPressed: () => context.read<CartProvider>().removeItem(product),
         icon: const Icon(Icons.delete_outline),
       ),
     ),
   );
+}
+
+class _CartProductImage extends StatelessWidget {
+  const _CartProductImage({required this.url});
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    final uri = Uri.tryParse(url);
+    final validUrl =
+        uri != null &&
+        uri.hasAuthority &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
+    final placeholder = Container(
+      width: 48,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Icon(Icons.image_not_supported_outlined),
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: validUrl
+          ? Image.network(
+              url,
+              width: 48,
+              height: 48,
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, progress) {
+                if (progress == null) return child;
+                final expected = progress.expectedTotalBytes;
+                final value = expected == null
+                    ? null
+                    : progress.cumulativeBytesLoaded / expected;
+                return SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Center(child: CircularProgressIndicator(value: value)),
+                );
+              },
+              errorBuilder: (_, _, _) => placeholder,
+            )
+          : placeholder,
+    );
+  }
 }
 
 class _EmptyCart extends StatelessWidget {
