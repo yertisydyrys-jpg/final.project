@@ -1,4 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/note_item.dart';
+import '../providers/theme_settings.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key});
@@ -10,12 +17,123 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   bool _isBookmarked = false;
   bool _isCardActive = true;
+  final _nameController = TextEditingController();
+  final _newNoteController = TextEditingController();
+
+  String _displayName = 'Guest User';
+  List<NoteItem> _notes = [];
+  bool _isLoadingLocalData = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocalData();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _newNoteController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadLocalData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('user_display_name') ?? 'Guest User';
+    final savedNotes = prefs.getString('notes_list');
+
+    final notes = savedNotes == null
+        ? <NoteItem>[]
+        : (jsonDecode(savedNotes) as List<dynamic>)
+              .map(
+                (item) =>
+                    NoteItem.fromJson(Map<String, dynamic>.from(item as Map)),
+              )
+              .toList();
+
+    if (!mounted) return;
+
+    setState(() {
+      _displayName = name;
+      _nameController.text = name;
+      _notes = notes;
+      _isLoadingLocalData = false;
+    });
+  }
+
+  Future<void> _saveName() async {
+    final name = _nameController.text.trim();
+    final prefs = await SharedPreferences.getInstance();
+    final saved = await prefs.setString('user_display_name', name);
+
+    if (!saved) {
+      throw StateError('Could not save the display name.');
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _displayName = name.isEmpty ? 'Guest User' : name;
+    });
+  }
+
+  Future<void> _persistNotes() async {
+    final json = jsonEncode(_notes.map((note) => note.toJson()).toList());
+    final prefs = await SharedPreferences.getInstance();
+    final saved = await prefs.setString('notes_list', json);
+
+    if (!saved) {
+      throw StateError('Could not save the notes.');
+    }
+  }
+
+  Future<void> _addNote() async {
+    final title = _newNoteController.text.trim();
+    if (title.isEmpty) return;
+
+    final now = DateTime.now();
+    final note = NoteItem(
+      id: now.microsecondsSinceEpoch.toString(),
+      title: title,
+      dateText: now.toLocal().toString().split(' ').first,
+      isCompleted: false,
+    );
+
+    setState(() {
+      _notes.insert(0, note);
+      _newNoteController.clear();
+    });
+
+    await _persistNotes();
+  }
+
+  Future<void> _toggleNote(int index, bool isCompleted) async {
+    final note = _notes[index];
+
+    setState(() {
+      _notes[index] = NoteItem(
+        id: note.id,
+        title: note.title,
+        dateText: note.dateText,
+        isCompleted: isCompleted,
+      );
+    });
+
+    await _persistNotes();
+  }
+
+  Future<void> _deleteNote(int index) async {
+    setState(() {
+      _notes.removeAt(index);
+    });
+
+    await _persistNotes();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Card Details'),
+        title: Text(_displayName),
         actions: [
           IconButton(
             icon: Icon(
@@ -69,10 +187,12 @@ class _DetailScreenState extends State<DetailScreen> {
                                 padding: const EdgeInsets.all(20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
                                           'Premium Black Card',
@@ -83,7 +203,9 @@ class _DetailScreenState extends State<DetailScreen> {
                                           ),
                                         ),
                                         Icon(
-                                          _isCardActive ? Icons.check_circle : Icons.pause_circle,
+                                          _isCardActive
+                                              ? Icons.check_circle
+                                              : Icons.pause_circle,
                                           color: Colors.white,
                                         ),
                                       ],
@@ -98,15 +220,22 @@ class _DetailScreenState extends State<DetailScreen> {
                                       ),
                                     ),
                                     const Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           'ALIKHAN DEV',
-                                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                         Text(
                                           '08/28',
-                                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -124,7 +253,9 @@ class _DetailScreenState extends State<DetailScreen> {
                               child: IconButton(
                                 padding: EdgeInsets.zero,
                                 icon: Icon(
-                                  _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                                  _isBookmarked
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_border,
                                   size: 20,
                                   color: const Color(0xFF02569B),
                                 ),
@@ -158,7 +289,11 @@ class _DetailScreenState extends State<DetailScreen> {
                               ),
                               Row(
                                 children: const [
-                                  Icon(Icons.star, color: Colors.amber, size: 20),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 20,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     '4.9',
@@ -220,7 +355,11 @@ class _DetailScreenState extends State<DetailScreen> {
                             ),
                             child: SwitchListTile(
                               title: const Text('Card Status'),
-                              subtitle: Text(_isCardActive ? 'Active and operational' : 'Frozen'),
+                              subtitle: Text(
+                                _isCardActive
+                                    ? 'Active and operational'
+                                    : 'Frozen',
+                              ),
                               value: _isCardActive,
                               onChanged: (val) {
                                 setState(() {
@@ -230,6 +369,93 @@ class _DetailScreenState extends State<DetailScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Profile',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              TextField(
+                                controller: _nameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Username',
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton(
+                                  onPressed: _saveName,
+                                  child: const Text('Save'),
+                                ),
+                              ),
+                              SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text('Dark mode'),
+                                value: context
+                                    .watch<ThemeSettings>()
+                                    .isDarkMode,
+                                onChanged: (value) async {
+                                  await context
+                                      .read<ThemeSettings>()
+                                      .setDarkMode(value);
+                                },
+                              ),
+                              const Divider(),
+                              TextField(
+                                controller: _newNoteController,
+                                decoration: InputDecoration(
+                                  labelText: 'New note',
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: _addNote,
+                                  ),
+                                ),
+                                onSubmitted: (_) => _addNote(),
+                              ),
+                              if (_isLoadingLocalData)
+                                const LinearProgressIndicator()
+                              else
+                                ...List.generate(_notes.length, (index) {
+                                  final note = _notes[index];
+
+                                  return ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: Checkbox(
+                                      value: note.isCompleted,
+                                      onChanged: (value) async {
+                                        if (value != null) {
+                                          await _toggleNote(index, value);
+                                        }
+                                      },
+                                    ),
+                                    title: Text(
+                                      note.title,
+                                      style: TextStyle(
+                                        decoration: note.isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                    subtitle: Text(note.dateText),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete_outline),
+                                      onPressed: () async {
+                                        await _deleteNote(index);
+                                      },
+                                    ),
+                                  );
+                                }),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
